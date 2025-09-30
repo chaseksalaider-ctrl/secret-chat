@@ -1,53 +1,49 @@
-# secret-chat[chat.html lol.txt](https://github.com/user-attachments/files/22616629/chat.html.lol.txt)
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>แชทออนไลน์ (เวอร์ชันชื่อเอง)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แชทออนไลน์ชื่อเอง</title>
 <style>
-  body{font-family: "Noto Sans", Arial; background:#efefef; margin:0; padding:20px; color:#111;}
-  .wrap{max-width:900px;margin:0 auto;}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .logo{font-weight:700;font-size:20px}
-  button {cursor:pointer}
-  .panel{background:#fff;border:4px solid #222;padding:12px;margin-bottom:14px;border-radius:6px;box-shadow:2px 2px 0 rgba(0,0,0,0.25)}
-  #messages{height:360px; overflow:auto; padding:8px; border:1px solid #ddd; background:#fff;}
-  .msg{padding:8px;margin:8px 0;border-radius:6px; border:1px solid #ccc; position:relative;}
-  .me{background:#e8ffe8;border-color:#7fcf7f}
-  .meta{font-size:12px;color:#555;margin-bottom:6px}
-  .right {position:absolute; right:8px; top:8px;}
-  .controls{display:flex;gap:8px; margin-top:8px; align-items:center}
-  textarea{width:100%; height:70px; padding:8px; box-sizing:border-box; font-size:14px}
-  .btn {padding:8px 12px;border:2px solid #222;background:#f8f8f8;border-radius:4px}
-  .muted{color:#888;font-size:13px}
+body{font-family:sans-serif;background:#efefef;margin:0;padding:20px;color:#111;}
+.wrap{max-width:900px;margin:0 auto;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.logo{font-weight:700;font-size:20px}
+button{cursor:pointer}
+.panel{background:#fff;border:4px solid #222;padding:12px;margin-bottom:14px;border-radius:6px;box-shadow:2px 2px 0 rgba(0,0,0,0.25)}
+#messages{height:360px; overflow:auto; padding:8px; border:1px solid #ddd; background:#fff;}
+.msg{padding:8px;margin:8px 0;border-radius:6px; border:1px solid #ccc; position:relative;}
+.meta{font-size:12px;color:#555;margin-bottom:6px}
+.right{position:absolute; right:8px; top:8px;}
+.controls{display:flex;gap:8px; margin-top:8px; align-items:center}
+textarea{width:100%; height:70px; padding:8px; box-sizing:border-box; font-size:14px}
+.btn{padding:8px 12px;border:2px solid #222;background:#f8f8f8;border-radius:4px}
+.muted{color:#888;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="logo">Encrypted text chat — แบบตั้งชื่อเอง</div>
-    <div>
-      <input id="nameInput" placeholder="ใส่ชื่อก่อนแชท" />
-    </div>
-  </header>
+<header>
+  <div class="logo">แชทออนไลน์ชื่อเอง — โจเซฟเวอร์ชัน</div>
+  <div>
+    <input id="nameInput" placeholder="ใส่ชื่อก่อนแชท" />
+  </div>
+</header>
 
-  <div class="panel">
-    <div id="messages" aria-live="polite"></div>
-
-    <div style="display:flex;gap:12px;margin-top:10px">
-      <div style="flex:1">
-        <textarea id="inputMsg" placeholder="พิมพ์ข้อความที่นี่..."></textarea>
-        <div class="controls">
-          <button id="sendBtn" class="btn">ส่ง</button>
-          <button id="clearBtn" class="btn">ลบข้อความทั้งหมด (รีเซ็ต)</button>
-          <div class="muted" id="statusTxt">สถานะ: เชื่อมต่อ</div>
-        </div>
+<div class="panel">
+  <div id="messages" aria-live="polite"></div>
+  <div style="display:flex;gap:12px;margin-top:10px">
+    <div style="flex:1">
+      <textarea id="inputMsg" placeholder="พิมพ์ข้อความที่นี่..."></textarea>
+      <div class="controls">
+        <button id="sendBtn" class="btn">ส่ง</button>
+        <button id="clearBtn" class="btn">ลบข้อความทั้งหมด (รีเซ็ต)</button>
+        <div class="muted" id="statusTxt">สถานะ: เชื่อมต่อ</div>
       </div>
     </div>
   </div>
-
-  <div class="muted">ข้อความจะรีเซ็ตทุกเดือนอัตโนมัติ</div>
+</div>
+<div class="muted">ข้อความจะรีเซ็ตทุกเดือนอัตโนมัติ</div>
 </div>
 
 <!-- Firebase -->
@@ -55,20 +51,19 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// ====== ใส่คอนฟิก Firebase ของมึงที่นี่ ======
+// ====== แก้ config ให้ตรงกับ Project Firebase ของมึง ======
 const firebaseConfig = {
- apiKey: "AIzaSyDe23wzWDc5yh1GMKuo8eCpHE1m7_967X0",
- authDomain: "messagesel-3bfce.firebaseapp.com",
- databaseURL: "https://messagesel-3bfce-default-rtdb.firebaseio.com",
- projectId: "messagesel-3bfce",
- storageBucket: "messagesel-3bfce.firebasestorage.app",
- messagingSenderId: "1013439867079",
- appId: "1:1013439867079:web:c6146c9124703d6fc876e2",
- measurementId: "G-311ZX3KWS7"
+  apiKey: "AIzaSyDe23wzWDc5yh1GMKuo8eCpHE1m7_967X0",
+  authDomain: "messagesel-3bfce.firebaseapp.com",
+  databaseURL: "https://messagesel-3bfce-default-rtdb.firebaseio.com",
+  projectId: "messagesel-3bfce",
+  storageBucket: "messagesel-3bfce.firebasestorage.app",
+  messagingSenderId: "1013439867079",
+  appId: "1:1013439867079:web:c6146c9124703d6fc876e2"
+  measurementId: "G-311ZX3KWS7"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
 const messagesRef = db.ref('messages');
 const metaRef = db.ref('meta');
 
@@ -80,17 +75,12 @@ const clearBtn = document.getElementById('clearBtn');
 const statusTxt = document.getElementById('statusTxt');
 const nameInput = document.getElementById('nameInput');
 
-// ฟังก์ชันส่งข้อความ
+// ส่งข้อความ
 sendBtn.addEventListener('click', async () => {
   const text = inputMsg.value.trim();
   const name = nameInput.value.trim() || "ไม่ระบุชื่อ";
   if (!text) return;
-
-  const msg = {
-    text: text,
-    sender: name,
-    ts: Date.now()
-  };
+  const msg = { text, sender: name, ts: Date.now() };
   await messagesRef.push(msg);
   inputMsg.value = '';
 });
@@ -108,7 +98,6 @@ async function checkMonthlyReset() {
   const last = metaSnap.val();
   const now = new Date();
   const nowKey = now.getFullYear() + '-' + (now.getMonth()+1);
-
   let needReset = false;
   if (!last) needReset = true;
   else {
@@ -116,7 +105,6 @@ async function checkMonthlyReset() {
     const lastKey = lastDate.getFullYear() + '-' + (lastDate.getMonth()+1);
     if (lastKey !== nowKey) needReset = true;
   }
-
   if (needReset) {
     await messagesRef.remove();
     await metaRef.child('lastReset').set(Date.now());
@@ -125,7 +113,7 @@ async function checkMonthlyReset() {
 checkMonthlyReset();
 setInterval(checkMonthlyReset, 30000);
 
-// ฟังการเปลี่ยนแปลงข้อความ
+// ฟังการเปลี่ยนแปลงข้อความแบบ realtime
 messagesRef.on('value', snap => {
   const data = snap.val() || {};
   renderMessages(data);
@@ -154,7 +142,7 @@ function renderMessages(data) {
     del.onclick = async () => {
       if (!confirm('ลบข้อความนี้ไหม?')) return;
       await messagesRef.child(item.key).remove();
-    }
+    };
     div.appendChild(del);
 
     messagesEl.appendChild(div);
@@ -162,7 +150,7 @@ function renderMessages(data) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// connection state
+// ตรวจ connection state
 const connectedRef = db.ref(".info/connected");
 connectedRef.on("value", snap => {
   statusTxt.textContent = snap.val() ? 'เชื่อมต่อ' : 'ตัดการเชื่อมต่อ';
@@ -170,3 +158,5 @@ connectedRef.on("value", snap => {
 </script>
 </body>
 </html>
+
+
