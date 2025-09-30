@@ -57,13 +57,14 @@
 <script>
 // ====== ใส่คอนฟิก Firebase ของมึงที่นี่ ======
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT.firebaseapp.com",
-  databaseURL: "https://PROJECT-default-rtdb.firebaseio.com",
-  projectId: "PROJECT",
-  storageBucket: "PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+ apiKey: "AIzaSyDe23wzWDc5yh1GMKuo8eCpHE1m7_967X0",
+ authDomain: "messagesel-3bfce.firebaseapp.com",
+ databaseURL: "https://messagesel-3bfce-default-rtdb.firebaseio.com",
+ projectId: "messagesel-3bfce",
+ storageBucket: "messagesel-3bfce.firebasestorage.app",
+ messagingSenderId: "1013439867079",
+ appId: "1:1013439867079:web:c6146c9124703d6fc876e2",
+ measurementId: "G-311ZX3KWS7"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
