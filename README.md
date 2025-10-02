@@ -5,26 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>แชทออนไลน์ชื่อเอง</title>
 <style>
-body{font-family:sans-serif;background:#efefef;margin:0;padding:20px;color:#111;}
+body{font-family:sans-serif;background:#8da99b;margin:0;padding:4px;color:#111;}
 .wrap{max-width:900px;margin:0 auto;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .logo{font-weight:700;font-size:20px}
 button{cursor:pointer}
-.panel{background:#fff;border:4px solid #222;padding:12px;margin-bottom:14px;border-radius:6px;box-shadow:2px 2px 0 rgba(0,0,0,0.25)}
+.panel{background:#fff;border:2px solid #fff;padding:12px;margin-bottom:14px;border-radius:11px;box-shadow:2px 2px 0 rgba(0,0,0,0.25)}
 #messages{height:360px; overflow:auto; padding:8px; border:1px solid #ddd; background:#fff;}
 .msg{padding:8px;margin:8px 0;border-radius:6px; border:1px solid #ccc; position:relative;}
-.meta{font-size:12px;color:#555;margin-bottom:6px}
-.right{position:absolute; right:8px; top:8px;}
-.controls{display:flex;gap:8px; margin-top:8px; align-items:center}
+.meta{font-size:12px;color:#610a10;margin-bottom:6px}
+.controls{display:flex;gap:8px; margin-top:8px; align-items:center; justify-content:flex-end;}
 textarea{width:100%; height:70px; padding:8px; box-sizing:border-box; font-size:14px}
-.btn{padding:8px 12px;border:2px solid #222;background:#f8f8f8;border-radius:4px}
-.muted{color:#888;font-size:13px}
+.btn{padding:8px 12px;border:2px solid #fab3ad;background:#fab3ad;border-radius:300px}
+.muted{color:#2c2827;font-size:13px}
+.msg button{margin-left:6px;padding:4px 8px;border-radius:4px;border:1px solid #888;background:#f0f0f0;}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="logo">แชทออนไลน์ชื่อเอง — โจเซฟเวอร์ชัน</div>
+  <div class="logo">แชทออนไลน์ — โมดูลโจเซฟ (ทดลอง)</div>
   <div>
     <input id="nameInput" placeholder="ใส่ชื่อก่อนแชท" />
   </div>
@@ -32,15 +32,12 @@ textarea{width:100%; height:70px; padding:8px; box-sizing:border-box; font-size:
 
 <div class="panel">
   <div id="messages" aria-live="polite"></div>
-  <div style="display:flex;gap:12px;margin-top:10px">
-    <div style="flex:1">
-      <textarea id="inputMsg" placeholder="พิมพ์ข้อความที่นี่..."></textarea>
-      <div class="controls">
-        <button id="sendBtn" class="btn">ส่ง</button>
-        <button id="clearBtn" class="btn">ลบข้อความทั้งหมด (รีเซ็ต)</button>
-        <div class="muted" id="statusTxt">สถานะ: เชื่อมต่อ</div>
-      </div>
+  <div style="margin-top:10px; display:flex; flex-direction:column;">
+    <textarea id="inputMsg" placeholder="พิมพ์ข้อความที่นี่..."></textarea>
+    <div class="controls">
+      <button id="sendBtn" class="btn">ส่ง</button>
     </div>
+    <div class="muted" id="statusTxt">สถานะ: เชื่อมต่อ</div>
   </div>
 </div>
 <div class="muted">ข้อความจะรีเซ็ตทุกเดือนอัตโนมัติ</div>
@@ -60,7 +57,6 @@ const firebaseConfig = {
   storageBucket: "messagesel-3bfce.firebasestorage.app",
   messagingSenderId: "1013439867079",
   appId: "1:1013439867079:web:c6146c9124703d6fc876e2"
-
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -71,7 +67,6 @@ const metaRef = db.ref('meta');
 const sendBtn = document.getElementById('sendBtn');
 const inputMsg = document.getElementById('inputMsg');
 const messagesEl = document.getElementById('messages');
-const clearBtn = document.getElementById('clearBtn');
 const statusTxt = document.getElementById('statusTxt');
 const nameInput = document.getElementById('nameInput');
 
@@ -83,13 +78,6 @@ sendBtn.addEventListener('click', async () => {
   const msg = { text, sender: name, ts: Date.now() };
   await messagesRef.push(msg);
   inputMsg.value = '';
-});
-
-// ลบข้อความทั้งหมด
-clearBtn.addEventListener('click', async () => {
-  if (!confirm('ลบข้อความทั้งหมดจริง?')) return;
-  await messagesRef.remove();
-  await metaRef.child('lastReset').set(Date.now());
 });
 
 // รีเซ็ตอัตโนมัติรายเดือน
@@ -119,6 +107,7 @@ messagesRef.on('value', snap => {
   renderMessages(data);
 });
 
+// แสดงข้อความและปุ่มคัดลอก/ยกเลิก
 function renderMessages(data) {
   const arr = Object.keys(data).map(k => ({ key:k, ...data[k] }));
   arr.sort((a,b) => (a.ts||0) - (b.ts||0));
@@ -126,6 +115,7 @@ function renderMessages(data) {
   arr.forEach(item => {
     const div = document.createElement('div');
     div.className = 'msg';
+
     const meta = document.createElement('div');
     meta.className = 'meta';
     meta.textContent = `ส่งโดย: ${item.sender} — ${new Date(item.ts).toLocaleString()}`;
@@ -135,15 +125,24 @@ function renderMessages(data) {
     txt.textContent = item.text;
     div.appendChild(txt);
 
-    // ปุ่มลบข้อความเดี่ยว
+    // ปุ่มยกเลิก
     const del = document.createElement('button');
-    del.className = 'right btn';
-    del.textContent = 'ลบ';
+    del.textContent = 'ยกเลิก';
     del.onclick = async () => {
       if (!confirm('ลบข้อความนี้ไหม?')) return;
       await messagesRef.child(item.key).remove();
     };
     div.appendChild(del);
+
+    // ปุ่มคัดลอก
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'คัดลอก';
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(item.text)
+        .then(() => alert('คัดลอกเรียบร้อย!'))
+        .catch(() => alert('คัดลอกไม่สำเร็จ'));
+    };
+    div.appendChild(copyBtn);
 
     messagesEl.appendChild(div);
   });
